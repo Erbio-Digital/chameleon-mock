@@ -1,0 +1,37 @@
+{
+  "name": "chameleon-panel",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Chameleon web panel",
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@microsoft/signalr": "8.0.7",
+    "@tanstack/react-query": "5.81.5",
+    "lucide-react": "0.525.0",
+    "oidc-client-ts": "3.1.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-router": "7.6.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/node": "22.15.30",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "4.7.0",
+    "eslint": "9.39.5",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "eslint-plugin-react-refresh": "0.4.26",
+    "globals": "16.5.0",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.71.1",
+    "vite": "6.4.4"
+  }
+}

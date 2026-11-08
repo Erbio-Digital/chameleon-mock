@@ -1,0 +1,26 @@
+name: catalog-verify
+# Step 1 of the verified badge (the human review of the source is step 2).
+on:
+  pull_request:
+    paths:
+      - 'catalog/**'
+      - 'tools/catalog/**'
+      - 'tools/catalog-verify/**'
+      - '.github/workflows/catalog-verify.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 8.0.x }
+      - name: Verify the committed catalog against nuget.org
+        run: |
+          dotnet build -c Release src/Chameleon.Host
+          dotnet run -c Release --project tools/catalog-verify -- \
+            --catalog catalog/connectors.json --sources https://api.nuget.org/v3/index.json \
+            --providers catalog/providers --host src/Chameleon.Host/bin/Release/net8.0/Chameleon.Host.dll

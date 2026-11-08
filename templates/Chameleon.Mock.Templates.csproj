@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <PackageId>Chameleon.Mock.Templates</PackageId>
+    <PackageType>Template</PackageType>
+    <PackageTags>chameleon dotnet-new templates</PackageTags>
+    <Description>dotnet new template for Chameleon connectors</Description>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <NoBuild>true</NoBuild>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <ContentTargetFolders>content</ContentTargetFolders>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="chameleon-connector/**" Exclude="**/bin/**;**/obj/**" PackagePath="content/chameleon-connector" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>Pix (Central Bank standard)</Title>
+    <PackageId>Chameleon.Mock.Connectors.Pix</PackageId>
+    <ChameleonConnectorName>pix</ChameleonConnectorName>
+    <PackageTags>chameleon chameleon-connector chameleon-name:$(ChameleonConnectorName)</PackageTags>
+    <Description>Stateful simulator of the Central Bank Pix API for Chameleon</Description>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\Chameleon.Connectors.Pix.Common\Chameleon.Connectors.Pix.Common.csproj" />
+    <EmbeddedResource Include="logo.png" LogicalName="logo.png" />
+  </ItemGroup>
+</Project>

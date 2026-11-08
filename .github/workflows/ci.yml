@@ -1,0 +1,78 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 8.0.x }
+      - run: dotnet test Chameleon.sln -c Release
+  web:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: web } }
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9.15.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm, cache-dependency-path: web/pnpm-lock.yaml }
+      - run: pnpm install --frozen-lockfile && pnpm lint && pnpm build
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - run: docker build -t chameleon:ci .
+      - name: Plain docker run answers on 8080
+        run: |
+          docker run -d --name chameleon-run -p 18080:8080 -e CHAMELEON_CONNECTORS= chameleon:ci
+          ok=1
+          for i in $(seq 30); do curl -fsS http://localhost:18080/_chameleon/health && { ok=0; break; }; sleep 2; done
+          [ "$ok" = 0 ] || docker logs chameleon-run
+          docker rm -f chameleon-run
+          exit "$ok"
+  smoke:
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 8.0.x }
+      - name: Pack connectors and build the dev catalog
+        run: |
+          dotnet pack -c Release -o artifacts/packages
+          dotnet run -c Release --project tools/catalog -- artifacts/packages artifacts/packages/catalog.json --providers catalog/providers
+      - run: docker compose up -d --build
+      - name: Wait for health
+        run: for i in $(seq 60); do curl -sf http://localhost:5000/_chameleon/health && exit 0; sleep 2; done; docker compose logs chameleon; exit 1
+      - run: python tests/smoke/smoke_test.py --skip-dotnet --skip-build
+      - if: always()
+        run: docker compose down -v
+      - name: Smoke with a real OIDC provider (Keycloak)
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.oidc.yml up -d --wait
+          python tests/smoke/smoke_test.py --skip-dotnet --skip-build --oidc
+      - if: failure()
+        run: docker compose -f docker-compose.yml -f docker-compose.oidc.yml logs
+      - if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.oidc.yml down -v
+  gitleaks:
+    runs-on: ubuntu-latest
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false, fetch-depth: 0 }
+      - run: |
+          curl -sSfLo gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz
+          echo "5bc41815076e6ed6ef8fbecc9d9b75bcae31f39029ceb55da08086315316e3ba  gitleaks.tar.gz" | sha256sum -c -
+          tar -xzf gitleaks.tar.gz gitleaks
+          ./gitleaks detect -s . -c .gitleaks.toml -v

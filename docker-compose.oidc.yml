@@ -1,0 +1,53 @@
+# Login against a real OIDC provider (Keycloak) for local tests:
+#   docker compose -f docker-compose.yml -f docker-compose.oidc.yml up
+# Panel: http://localhost:5000/ui, user ana@example.com / test-password.
+# Test-only material: the realm, the users and the CA below exist only for this file.
+# Keycloak listens on all interfaces so host.docker.internal reaches it from the browser and the
+# container; do not run it on an untrusted network.
+# Never reuse CHAMELEON_SECRET_KEY or the CA below outside this local test: they are public, and anyone holding the CA key can mint mTLS client certificates.
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.7
+    command: ["start-dev", "--import-realm", "--http-port=8180", "--hostname=http://host.docker.internal:8180"]
+    ports:
+      - "8180:8180"
+    volumes:
+      - ./tests/oidc/realm-test.json:/opt/keycloak/data/import/realm-test.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8180 && printf 'GET /realms/test HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3 && grep -q 200 <&3"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  chameleon:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      CHAMELEON_AUTH: oidc
+      CHAMELEON_OIDC_ISSUER: http://host.docker.internal:8180/realms/test
+      CHAMELEON_OIDC_CLIENT_ID: chameleon-panel
+      CHAMELEON_ALLOWED_EMAIL_DOMAINS: example.com,example.org
+      CHAMELEON_CI_KEY: chm_ci_local-test-key
+      CHAMELEON_SECRET_KEY: Y2hhbWVsZW9uLW9pZGMtdGVzdC1rZXktMzItYnl0ZXM=
+      # With oidc the dev secrets file is ignored; the CA comes from configuration.
+      CHAMELEON_CA_CERT: |
+        -----BEGIN CERTIFICATE-----
+        MIIBqjCCAVCgAwIBAgIUCFOEdHWZCjLwcMP0FaAMqlYowvYwCgYIKoZIzj0EAwIw
+        ITEfMB0GA1UEAwwWQ2hhbWVsZW9uIE9JREMgVGVzdCBDQTAeFw0yNjExMDgxNTQy
+        NDBaFw0zNjExMDUxNTQyNDBaMCExHzAdBgNVBAMMFkNoYW1lbGVvbiBPSURDIFRl
+        c3QgQ0EwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAATAK4PngHjVMryzrDOYVrD9
+        FhPPGQZDv7Rl1AajRw0NCl76nSdggP0Dr6kFhK95f2zmfm7D987W4V+VcpnjVHCj
+        o2YwZDAdBgNVHQ4EFgQUITXXb76iRFuHUXyeMzls+c57nXcwHwYDVR0jBBgwFoAU
+        ITXXb76iRFuHUXyeMzls+c57nXcwEgYDVR0TAQH/BAgwBgEB/wIBADAOBgNVHQ8B
+        Af8EBAMCAQYwCgYIKoZIzj0EAwIDSAAwRQIhAInuyUzhqzPCpK0F+N+qUJxq6iL0
+        4yIN3mJDJK3SNnzKAiAhB5QbuhZ1gt+GeQ2NGMe5F9LpBeUu5fBR8DkoEAZN2Q==
+        -----END CERTIFICATE-----
+      CHAMELEON_CA_KEY: |
+        -----BEGIN PRIVATE KEY-----
+        MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgFANXk8/kP1wsyy32
+        c8MQ26Aq7ZfU+ILSHILaGyolPzmhRANCAATAK4PngHjVMryzrDOYVrD9FhPPGQZD
+        v7Rl1AajRw0NCl76nSdggP0Dr6kFhK95f2zmfm7D987W4V+VcpnjVHCj
+        -----END PRIVATE KEY-----
+    depends_on:
+      keycloak:
+        condition: service_healthy

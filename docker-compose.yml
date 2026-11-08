@@ -1,0 +1,63 @@
+services:
+  chameleon:
+    build: .
+    ports:
+      - "127.0.0.1:5000:8080"
+      - "127.0.0.1:5443:8443"
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      CHAMELEON_CONNECTORS: bradesco,inter,nfse-sp,pix,zendesk
+      # Development feed and catalog built from this checkout (see the smoke steps in the CI workflow).
+      # Once the packages are published, remove CHAMELEON_NUGET_SOURCES and CHAMELEON_CATALOG_URL
+      # to use NuGet.org and the official catalog.
+      CHAMELEON_NUGET_SOURCES: /feed
+      CHAMELEON_CATALOG_URL: file:///feed/catalog.json
+      CHAMELEON_STORE: postgres
+      CHAMELEON_POSTGRES_CONNECTION: Host=postgres;Database=chameleon;Username=chameleon;Password=chameleon-local
+      CHAMELEON_MIGRATE_ON_START: "true"
+      # Secret key and mTLS CA are generated on first start into this volume, one per machine.
+      # Deleting the volume invalidates previously issued credentials and certificates.
+      CHAMELEON_DEV_SECRETS_FILE: /data/dev-secrets.json
+      # Port that requires a client certificate.
+      CHAMELEON_MTLS_PORT: "8443"
+      CHAMELEON_MTLS_HOSTNAMES: localhost,host.docker.internal,chameleon
+      CHAMELEON_MTLS_URL: https://localhost:5443
+      # host.docker.internal is a private address: the SSRF policy blocks it unless listed.
+      CHAMELEON_WEBHOOK_ALLOWED_HOSTS: host.docker.internal
+      # Authentication (optional). Default CHAMELEON_AUTH=none: no login, for a local machine only.
+      # CHAMELEON_AUTH: oidc                                 # Login by any OIDC provider with discovery.
+      # CHAMELEON_OIDC_ISSUER: https://idp.example.com/realms/main
+      # CHAMELEON_OIDC_CLIENT_ID: chameleon-panel           # Public client, redirect URI {origin}/ui/callback.
+      # CHAMELEON_OIDC_AUDIENCE: https://chameleon.example.com # Optional: when the provider issues JWT access tokens for this API.
+      # CHAMELEON_ALLOWED_EMAIL_DOMAINS: example.com         # And/or CHAMELEON_ALLOWED_EMAILS; required with oidc.
+      # CHAMELEON_CI_KEY: chm_ci_change-me                  # Optional: CI key, must start with chm_ci_.
+      # With oidc, CHAMELEON_SECRET_KEY, CHAMELEON_CA_CERT and CHAMELEON_CA_KEY come from configuration.
+      # See docker-compose.oidc.yml for a local provider.
+    volumes:
+      - chameleon-data:/data
+      - ./artifacts/packages:/feed:ro
+      - chameleon-plugins:/plugins
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_DB: chameleon
+      POSTGRES_USER: chameleon
+      POSTGRES_PASSWORD: chameleon-local
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chameleon -d chameleon"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres-data:
+  chameleon-data:
+  chameleon-plugins:

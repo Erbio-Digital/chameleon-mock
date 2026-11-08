@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Stand-in for a future Chameleon.Sdk: same assembly name, AssemblyVersion 0.2.0. Never shipped:
+       Fixture.Connector.OldSdk compiles against it so its metadata references Chameleon.Sdk 0.2.0. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>Chameleon.Sdk</AssemblyName>
+    <RootNamespace>Chameleon.Sdk</RootNamespace>
+    <AssemblyVersion>0.2.0.0</AssemblyVersion>
+    <Version>0.2.0</Version>
+  </PropertyGroup>
+</Project>

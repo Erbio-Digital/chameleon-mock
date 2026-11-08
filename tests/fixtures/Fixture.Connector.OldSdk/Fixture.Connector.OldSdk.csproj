@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- A connector package built against Chameleon.Sdk 0.2.0 (the fake one), which the host must refuse. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <PackageId>Fixture.Connector.OldSdk</PackageId>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fixture.FakeSdk\Fixture.FakeSdk.csproj" Private="false" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

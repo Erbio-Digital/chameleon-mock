@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- A connector with constructor injection (dependency registered by its module), named "zendesk" so it clashes
+       with the real Zendesk package, and a package id that differs from the assembly name (main-dll fallback). -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <PackageId>Fixture.Plugin.Injected</PackageId>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\..\..\src\Chameleon.Sdk\Chameleon.Sdk.csproj" Private="false" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

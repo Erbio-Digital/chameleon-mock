@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>Chameleon.Mock.Connectors.Pix.Common</PackageId>
+    <PackageTags>chameleon</PackageTags>
+    <Description>Shared Pix (BCB) API simulation used by Chameleon bank connectors</Description>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\..\src\Chameleon.Sdk\Chameleon.Sdk.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,35 @@
+{
+  "realm": "test",
+  "enabled": true,
+  "accessTokenLifespan": 3600,
+  "clients": [
+    {
+      "clientId": "chameleon-panel",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:5000/ui/*"],
+      "webOrigins": ["http://localhost:5000"],
+      "attributes": { "pkce.code.challenge.method": "S256" },
+      "defaultClientScopes": ["profile", "email"]
+    }
+  ],
+  "users": [
+    {
+      "username": "ana@example.com", "email": "ana@example.com", "emailVerified": true, "enabled": true,
+      "firstName": "Ana", "lastName": "Test",
+      "credentials": [{ "type": "password", "value": "test-password", "temporary": false }]
+    },
+    {
+      "username": "bia@example.org", "email": "bia@example.org", "emailVerified": false, "enabled": true,
+      "firstName": "Bia", "lastName": "Test",
+      "credentials": [{ "type": "password", "value": "test-password", "temporary": false }]
+    },
+    {
+      "username": "caio@example.net", "email": "caio@example.net", "emailVerified": true, "enabled": true,
+      "firstName": "Caio", "lastName": "Test",
+      "credentials": [{ "type": "password", "value": "test-password", "temporary": false }]
+    }
+  ]
+}

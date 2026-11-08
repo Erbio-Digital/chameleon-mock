@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Checks every catalog entry (hashes, closure, license, repository, provider sheet, SDK) and runs the contract smoke.
+       Not packable, not referenced by the Host. It references the Host project to reuse the catalog types and PackageResolver. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Chameleon.CatalogVerify</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Chameleon.Host\Chameleon.Host.csproj" />
+  </ItemGroup>
+</Project>

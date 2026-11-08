@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <Version>0.1.0</Version>
+    <PackageId>Example.Connector</PackageId>
+    <ChameleonConnectorName>example-connector-name</ChameleonConnectorName>
+    <PackageTags>chameleon chameleon-connector chameleon-name:$(ChameleonConnectorName)</PackageTags>
+    <Description>Chameleon connector: Example Title</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <!-- The verified badge requires a public https repository URL in the package. -->
+    <!-- <RepositoryUrl>https://github.com/you/your-connector</RepositoryUrl> -->
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <!-- Provided by the Chameleon host at runtime: compile against it, do not ship it. -->
+    <PackageReference Include="Chameleon.Mock.Sdk" Version="[0.1.0, 0.2.0)" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+</Project>

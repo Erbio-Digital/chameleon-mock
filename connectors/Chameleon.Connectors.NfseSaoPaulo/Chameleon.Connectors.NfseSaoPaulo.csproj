@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>NFS-e São Paulo</Title>
+    <PackageId>Chameleon.Mock.Connectors.NfseSaoPaulo</PackageId>
+    <ChameleonConnectorName>nfse-sp</ChameleonConnectorName>
+    <PackageTags>chameleon chameleon-connector chameleon-name:$(ChameleonConnectorName)</PackageTags>
+    <Description>Stateful simulator of the Sao Paulo city NFS-e web service for Chameleon</Description>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Chameleon.Sdk\Chameleon.Sdk.csproj" />
+    <EmbeddedResource Include="logo.png" LogicalName="logo.png" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>Banco Inter</Title>
+    <PackageId>Chameleon.Mock.Connectors.Inter</PackageId>
+    <ChameleonConnectorName>inter</ChameleonConnectorName>
+    <PackageTags>chameleon chameleon-connector chameleon-name:$(ChameleonConnectorName)</PackageTags>
+    <Description>Stateful simulator of the Inter Pix, billing and banking APIs for Chameleon</Description>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\Chameleon.Connectors.Pix.Common\Chameleon.Connectors.Pix.Common.csproj" />
+    <EmbeddedResource Include="logo.png" LogicalName="logo.png" />
+  </ItemGroup>
+</Project>

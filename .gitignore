@@ -1,0 +1,31 @@
+# Build output
+**/bin/
+**/obj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+
+# Rider / VS
+.idea/
+.vs/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Panel (web/)
+web/node_modules/
+src/Chameleon.Host/wwwroot/ui/
+
+# Local secrets and documents that never go to the repository
+.env
+*.env
+docs/SDD-*
+docs/BDD-*
+docs/PRIVADO-*
+.worktrees/
+
+__pycache__/
+*.pyc
+artifacts/
+/plugins/

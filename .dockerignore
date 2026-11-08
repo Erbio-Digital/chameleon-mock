@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+**/node_modules/
+.git/
+web/dist/
+src/Chameleon.Host/wwwroot/ui/
+artifacts/
+plugins/

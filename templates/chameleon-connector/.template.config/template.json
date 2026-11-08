@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Erbio Digital",
+  "classifications": ["Chameleon", "Connector", "Library"],
+  "identity": "Chameleon.Mock.Templates.Connector",
+  "name": "Chameleon connector",
+  "shortName": "chameleon-connector",
+  "sourceName": "Example.Connector",
+  "preferNameDirectory": true,
+  "tags": { "language": "C#", "type": "project" },
+  "symbols": {
+    "connectorName": { "type": "parameter", "datatype": "text", "defaultValue": "example", "replaces": "example-connector-name", "description": "Connector name (lowercase, used in CHAMELEON_CONNECTORS and in the route prefix)" },
+    "title": { "type": "parameter", "datatype": "text", "defaultValue": "Example", "replaces": "Example Title", "description": "Title shown in the panel (must not contain \", & or <: it is substituted into a C# string and an XML element)" }
+  }
+}

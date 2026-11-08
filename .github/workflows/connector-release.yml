@@ -1,0 +1,41 @@
+name: connector-release
+on:
+  push:
+    tags: ['connectors/*/v*']
+permissions:
+  contents: read
+jobs:
+  nuget:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 8.0.x }
+      - name: Find the connector project and check the version
+        id: find
+        run: |
+          name=$(echo "$GITHUB_REF_NAME" | cut -d/ -f2)
+          version=$(echo "$GITHUB_REF_NAME" | cut -d/ -f3 | sed 's/^v//')
+          [[ "$name" =~ ^[a-z0-9-]+$ ]] || { echo "invalid connector name"; exit 1; }
+          proj=$(grep -l "<ChameleonConnectorName>$name</ChameleonConnectorName>" connectors/*/*.csproj | head -1)
+          [ -n "$proj" ] || { echo "no connector named $name"; exit 1; }
+          v=$(dotnet msbuild "$proj" -getProperty:Version)
+          [ "$v" = "$version" ] || { echo "tag version $version != project version $v"; exit 1; }
+          echo "proj=$proj" >> "$GITHUB_OUTPUT"
+      - run: dotnet test Chameleon.sln -c Release
+      - name: Pack the connector and the shared libraries it references
+        env: { PROJ: '${{ steps.find.outputs.proj }}' }
+        run: |
+          set -o pipefail
+          dotnet pack "$PROJ" -c Release -o out
+          dotnet msbuild "$PROJ" -getItem:ProjectReference \
+            | jq -r '.Items.ProjectReference[] | select(.Filename | contains(".Common")) | .FullPath' \
+            | while read -r lib; do dotnet pack "$lib" -c Release -o out; done
+      - uses: NuGet/login@v1
+        id: login
+        with: { user: '${{ vars.NUGET_USER }}' }
+      - run: dotnet nuget push "out/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate

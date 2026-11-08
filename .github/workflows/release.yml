@@ -1,0 +1,51 @@
+name: release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  nuget:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 8.0.x }
+      - name: Tag matches Directory.Build.props
+        run: |
+          v=$(dotnet msbuild src/Chameleon.Sdk -getProperty:Version)
+          [ "v$v" = "$GITHUB_REF_NAME" ] || { echo "tag $GITHUB_REF_NAME != version $v"; exit 1; }
+      - run: dotnet test Chameleon.sln -c Release
+      - run: |
+          dotnet pack src/Chameleon.Engine -c Release -o out
+          dotnet pack src/Chameleon.Sdk -c Release -o out
+          dotnet pack templates/Chameleon.Mock.Templates.csproj -c Release -o out
+      - uses: NuGet/login@v1
+        id: login
+        with: { user: '${{ vars.NUGET_USER }}' }
+      - run: dotnet nuget push "out/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+  image:
+    runs-on: ubuntu-latest
+    needs: nuget
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: docker/login-action@v3
+        with: { registry: ghcr.io, username: '${{ github.actor }}', password: '${{ github.token }}' }
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/erbio-digital/chameleon-mock:${{ github.ref_name }}
+            ghcr.io/erbio-digital/chameleon-mock:latest
+          labels: |
+            org.opencontainers.image.source=https://github.com/Erbio-Digital/chameleon-mock
+            org.opencontainers.image.licenses=Apache-2.0

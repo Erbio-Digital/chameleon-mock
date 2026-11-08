@@ -1,0 +1,52 @@
+name: Connector request
+description: Ask for a new connector (a simulator for one provider's public API)
+title: "connector: "
+labels: ["connector-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Connectors simulate public API contracts only. Do not paste credentials, personal data or confidential documents here.
+  - type: input
+    id: provider
+    attributes:
+      label: Provider
+      description: Name of the provider or service to simulate.
+    validations:
+      required: true
+  - type: input
+    id: docs
+    attributes:
+      label: Link to the public documentation
+      description: A public link to the provider's API documentation. Requests without one cannot be accepted.
+      placeholder: https://
+    validations:
+      required: true
+  - type: textarea
+    id: operations
+    attributes:
+      label: Operations
+      description: The operations your application calls (for example, create a charge, query its status, cancel it).
+    validations:
+      required: true
+  - type: textarea
+    id: webhooks
+    attributes:
+      label: Webhooks
+      description: Events the provider sends to your application, how they are signed and how they are retried. Write "none" if there are no webhooks.
+    validations:
+      required: true
+  - type: textarea
+    id: auth
+    attributes:
+      label: Authentication
+      description: How your application authenticates (OAuth2 client credentials, API key, basic auth, client certificate and so on).
+    validations:
+      required: true
+  - type: checkboxes
+    id: public
+    attributes:
+      label: Confirmation
+      options:
+        - label: The API contract is public.
+          required: true

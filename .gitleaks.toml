@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Synthetic test material for the local OIDC provider"
+paths = ['''tests/oidc/''', '''docker-compose\.oidc\.yml''']

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Title>Bradesco</Title>
+    <PackageId>Chameleon.Mock.Connectors.Bradesco</PackageId>
+    <ChameleonConnectorName>bradesco</ChameleonConnectorName>
+    <PackageTags>chameleon chameleon-connector chameleon-name:$(ChameleonConnectorName)</PackageTags>
+    <Description>Stateful simulator of the Bradesco Pix and account APIs for Chameleon</Description>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\Chameleon.Connectors.Pix.Common\Chameleon.Connectors.Pix.Common.csproj" />
+    <EmbeddedResource Include="logo.png" LogicalName="logo.png" />
+  </ItemGroup>
+</Project>

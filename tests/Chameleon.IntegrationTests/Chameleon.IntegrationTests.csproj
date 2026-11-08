@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.11" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
+    <PackageReference Include="Testcontainers.PostgreSql" Version="3.10.0" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Chameleon.Host\Chameleon.Host.csproj" />
+    <ProjectReference Include="../../tools/catalog/catalog.csproj" />
+    <ProjectReference Include="../../tools/catalog-verify/catalog-verify.csproj" />
+  </ItemGroup>
+  <!-- Fixture connectors live outside the solution. They are published (framework-dependent, no
+       Chameleon.Sdk/Engine in the output) to $(OutDir)fixtures/{A,B}. Incremental: skipped while the
+       fixture sources are older than the stamp file next to the published output. -->
+  <ItemGroup>
+    <FixtureSource Include="../fixtures/**/*.cs;../fixtures/**/*.csproj" Exclude="../fixtures/**/obj/**;../fixtures/**/bin/**" />
+    <FixtureSource Include="../../src/Chameleon.Sdk/**/*.cs;../../src/Chameleon.Sdk/**/*.csproj;../../src/Chameleon.Engine/**/*.cs;../../src/Chameleon.Engine/**/*.csproj" Exclude="../../src/Chameleon.Sdk/obj/**;../../src/Chameleon.Sdk/bin/**;../../src/Chameleon.Engine/obj/**;../../src/Chameleon.Engine/bin/**" />
+  </ItemGroup>
+  <Target Name="PublishFixtures" AfterTargets="Build" Inputs="@(FixtureSource)" Outputs="$(OutDir)fixtures/.stamp">
+    <Exec Command="dotnet publish &quot;../fixtures/Fixture.Connector.A/Fixture.Connector.A.csproj&quot; -c $(Configuration) -o &quot;$(OutDir)fixtures/A&quot; --nologo -v q" />
+    <Exec Command="dotnet publish &quot;../fixtures/Fixture.Connector.B/Fixture.Connector.B.csproj&quot; -c $(Configuration) -o &quot;$(OutDir)fixtures/B&quot; --nologo -v q" />
+    <Touch Files="$(OutDir)fixtures/.stamp" AlwaysCreate="true" />
+  </Target>
+</Project>
