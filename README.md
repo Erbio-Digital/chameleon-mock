@@ -1,4 +1,22 @@
-# Chameleon
+<div align="center">
+  <img src="web/public/logo.svg" alt="Chameleon" width="160" />
+
+  <h1>Chameleon</h1>
+
+  <p><strong>Simulador com estado de provedores HTTP externos, para testes de integração.</strong></p>
+
+  <p>
+    <a href="https://github.com/Erbio-Digital/chameleon-mock/actions/workflows/ci.yml"><img src="https://github.com/Erbio-Digital/chameleon-mock/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-Apache--2.0-blue" alt="Licença Apache-2.0" /></a>
+    <img src="https://img.shields.io/badge/.NET-8.0-512BD4" alt=".NET 8" />
+  </p>
+
+  <p>
+    <a href="docs/pt-BR/getting-started.md">Primeiros passos</a> ·
+    <a href="docs/pt-BR/creating-a-connector.md">Criar um conector</a> ·
+    <a href="docs/pt-BR/limitations.md">Limitações</a>
+  </p>
+</div>
 
 O Chameleon é um simulador de código aberto, com estado, de provedores HTTP externos (pagamentos, notas fiscais, central de atendimento e APIs parecidas), para testes de integração. Sua aplicação chama o Chameleon no lugar do provedor real, e o Chameleon guarda o estado: uma cobrança é criada, paga, expira ou é devolvida, e os webhooks são entregues quando isso acontece.
 
