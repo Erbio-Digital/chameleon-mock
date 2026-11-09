@@ -1,6 +1,9 @@
 services:
   chameleon:
     build: .
+    # Docker Desktop resolves host.docker.internal by itself; Linux (CI runners) needs this mapping.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "127.0.0.1:5000:8080"
       - "127.0.0.1:5443:8443"
