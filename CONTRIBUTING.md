@@ -34,7 +34,7 @@ CI runs the same steps, plus a variant against a local Keycloak (`docker-compose
 
 - Use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `ci:`, `chore:`. Write the subject in English, in the imperative.
 - Keep a pull request to one change. Say what changed and why, and how you tested it.
-- Code, comments, messages and documentation in `docs/` are in English. Portuguese lives only in `docs/pt-BR/` and `README.pt-BR.md`; when you change a guide that has a Portuguese copy, update both.
+- Code, comments, messages and documentation in `docs/` are in English. Portuguese lives only in `docs/pt-BR/` and in `README.md`, which is Portuguese only; when you change a guide that has a Portuguese copy, update both.
 - No emoji in code.
 - Never commit credentials. CI runs gitleaks.
 

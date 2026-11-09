@@ -1,28 +1,26 @@
 # Chameleon
 
-[Português (Brasil)](README.pt-BR.md)
+O Chameleon é um simulador de código aberto, com estado, de provedores HTTP externos (pagamentos, notas fiscais, central de atendimento e APIs parecidas), para testes de integração. Sua aplicação chama o Chameleon no lugar do provedor real, e o Chameleon guarda o estado: uma cobrança é criada, paga, expira ou é devolvida, e os webhooks são entregues quando isso acontece.
 
-Chameleon is an open-source, stateful simulator of external HTTP providers (payments, invoicing, support desks and similar APIs), for integration testing. Your application calls Chameleon instead of the real provider, and Chameleon keeps state: a charge is created, paid, expired or refunded, and webhooks are delivered when that happens.
+> **Não use em produção.** O Chameleon é um simulador. Nunca aponte clientes reais, credenciais reais ou dinheiro real para ele. Com o padrão `CHAMELEON_AUTH=none`, qualquer pessoa que alcance a instância é operadora: rode em uma máquina local ou em rede privada.
 
-> **Not for production.** Chameleon is a simulator. Never point real customers, real credentials or real money at it. With the default `CHAMELEON_AUTH=none` anyone who reaches the instance is an operator: run it on a local machine or a private network.
+O que ele oferece:
 
-What you get:
+- Um host .NET 8 com painel web, API de controle e endpoint MCP.
+- Sandboxes isolados, cada um com estado, histórico, falhas e relógio próprios.
+- Injeção de falhas (timeout, erro, latência, corpo malformado, duplicação, reordenação e retenção de webhooks).
+- Conectores são plugins NuGet. Os verificados ficam em um catálogo; qualquer pessoa pode publicar o seu.
 
-- A .NET 8 host with a web panel, a control API and an MCP endpoint.
-- Isolated sandboxes, each with its own state, journal, faults and clock.
-- Fault injection (timeouts, errors, latency, malformed bodies, webhook duplication, reordering and holds).
-- Connectors are NuGet plugins. Verified ones are listed in a catalog; anyone can publish their own.
-
-## Quick start
+## Início rápido
 
 ```bash
 docker run -p 5000:8080 -e CHAMELEON_CONNECTORS=pix ghcr.io/erbio-digital/chameleon-mock:v0.1.0
 ```
 
-The panel is at <http://localhost:5000/ui>. Get a token and create a charge on the `pix` connector (in the `default` sandbox any client id is accepted):
+O painel fica em <http://localhost:5000/ui>. Obtenha um token e crie uma cobrança no conector `pix` (no sandbox `default` qualquer client id é aceito):
 
 ```bash
-CLIENT_ID=my-client CLIENT_SECRET=my-secret   # any values work in the default sandbox
+CLIENT_ID=my-client CLIENT_SECRET=my-secret   # qualquer valor serve no sandbox default
 TOKEN=$(curl -s -X POST http://localhost:5000/pix/oauth/token \
   -u "$CLIENT_ID:$CLIENT_SECRET" -d grant_type=client_credentials | sed -E 's/.*"access_token":"([^"]+)".*/\1/')
 
@@ -31,32 +29,30 @@ curl -s -X PUT http://localhost:5000/pix/v2/cob/chameleonexample0000000000001 \
   -d '{"calendario":{"expiracao":3600},"valor":{"original":"10.00"},"chave":"11111111-1111-1111-1111-111111111111"}'
 ```
 
-Connectors are downloaded from NuGet at startup, so the container needs internet access the first time. Next steps are in [Getting started](docs/getting-started.md).
+Os conectores são baixados do NuGet na inicialização, então o contêiner precisa de internet na primeira vez. Os próximos passos estão em [Primeiros passos](docs/pt-BR/getting-started.md).
 
-## Connectors
+## Conectores
 
-| Name | Simulates | Sheet |
+| Nome | Simula | Ficha |
 |---|---|---|
-| `bradesco` | Bradesco Pix and account API | [catalog/providers/bradesco.md](catalog/providers/bradesco.md) |
-| `inter` | Banco Inter Pix, billing and banking API | [catalog/providers/inter.md](catalog/providers/inter.md) |
-| `nfse-sp` | São Paulo city service invoice (NFS-e) web service | [catalog/providers/nfse-sp.md](catalog/providers/nfse-sp.md) |
-| `pix` | Central Bank Pix API (cob, cobv, lookup, refund, webhook per key) | [catalog/providers/pix.md](catalog/providers/pix.md) |
-| `zendesk` | Zendesk Support API | [catalog/providers/zendesk.md](catalog/providers/zendesk.md) |
+| `bradesco` | API Pix e de contas do Bradesco | [catalog/providers/bradesco.md](catalog/providers/bradesco.md) |
+| `inter` | API Pix, cobrança e banking do Banco Inter | [catalog/providers/inter.md](catalog/providers/inter.md) |
+| `nfse-sp` | Web service da nota fiscal de serviço (NFS-e) de São Paulo | [catalog/providers/nfse-sp.md](catalog/providers/nfse-sp.md) |
+| `pix` | API Pix do Banco Central (cob, cobv, consulta, devolução, webhook por chave) | [catalog/providers/pix.md](catalog/providers/pix.md) |
+| `zendesk` | API Zendesk Support | [catalog/providers/zendesk.md](catalog/providers/zendesk.md) |
 
-Load several with `CHAMELEON_CONNECTORS=bradesco,inter,nfse-sp,pix,zendesk`.
+Carregue vários com `CHAMELEON_CONNECTORS=bradesco,inter,nfse-sp,pix,zendesk`.
 
-## Documentation
+## Documentação
 
-- [Getting started](docs/getting-started.md): docker, compose with Postgres, sandboxes, clock, faults, webhooks, MCP, local development.
-- [Authentication](docs/authentication.md): `none` versus `oidc`, roles, tokens, provider examples.
-- [Creating a connector](docs/creating-a-connector.md)
-- [Verified badge](docs/verified-badge.md)
-- [Known limitations](docs/limitations.md)
-- [Releasing](docs/releasing.md) (maintainers)
-- [Contributing](CONTRIBUTING.md), [Security](SECURITY.md), [Code of conduct](CODE_OF_CONDUCT.md)
+- [Primeiros passos](docs/pt-BR/getting-started.md): docker, compose com Postgres, sandboxes, relógio, falhas, webhooks, MCP, desenvolvimento local.
+- [Autenticação](docs/pt-BR/authentication.md): `none` ou `oidc`, papéis, tokens, exemplos de provedores.
+- [Criando um conector](docs/pt-BR/creating-a-connector.md)
+- [Selo de verificado](docs/pt-BR/verified-badge.md)
+- [Limitações conhecidas](docs/pt-BR/limitations.md)
+- [Releases](docs/releasing.md) (mantenedores, só em inglês)
+- [Contribuindo](CONTRIBUTING.md), [Segurança](SECURITY.md), [Código de conduta](CODE_OF_CONDUCT.md) (em inglês)
 
-Guides in Portuguese live in [docs/pt-BR](docs/pt-BR/getting-started.md).
+## Licença
 
-## License
-
-Apache-2.0, see [LICENSE](LICENSE) and [NOTICE](NOTICE). Provider names are trademarks of their owners; Chameleon is not affiliated with any of them.
+Apache-2.0, veja [LICENSE](LICENSE) e [NOTICE](NOTICE). Os nomes de provedores são marcas de seus donos; o Chameleon não tem afiliação com nenhum deles.
