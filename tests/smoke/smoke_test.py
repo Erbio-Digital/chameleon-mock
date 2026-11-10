@@ -480,6 +480,13 @@ class LiveFeed:
         self._send({"protocol": "json", "version": 1})
         self._poll_once()  # handshake answer
         self._send({"type": 1, "target": "Join", "arguments": [sandbox], "invocationId": "1"})
+        # The POST only queues the invocation: wait for its completion, or the first events race the group join.
+        self.joined = False
+        deadline = time.time() + 15
+        while not self.joined and time.time() < deadline:
+            self._poll_once()
+        if not self.joined:
+            raise RuntimeError(f"live feed did not join {sandbox}")
         self.alive = True
         threading.Thread(target=self._loop, daemon=True).start()
 
@@ -492,7 +499,11 @@ class LiveFeed:
         raw = urllib.request.urlopen(BASE + self.url, timeout=110).read().decode()
         for frame in filter(None, raw.split(RS)):
             msg = json.loads(frame)
-            if msg.get("type") == 1 and msg.get("target") == "events":
+            if msg.get("type") == 3 and msg.get("invocationId") == "1":
+                if msg.get("error"):
+                    raise RuntimeError(f"live feed join failed: {msg['error']}")
+                self.joined = True
+            elif msg.get("type") == 1 and msg.get("target") == "events":
                 self.events.extend(msg["arguments"][0]["events"])
 
     def _loop(self) -> None:
