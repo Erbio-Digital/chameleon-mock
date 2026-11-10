@@ -39,7 +39,6 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 BASE = "http://localhost:5000"
 MTLS = "https://localhost:5443"  # port that requires a client certificate
-CONTAINER = os.environ.get("CHAMELEON_CONTAINER", "chameleon-chameleon-1")
 KEYCLOAK = "http://localhost:8180"
 OIDC = False
 WEBHOOK_PORT = 9999
@@ -695,7 +694,9 @@ def step_persistence() -> None:
         http("POST", "/_chameleon/sandboxes", {"id": SANDBOX, "ttlSeconds": 3600})
     status, sb_before = http("GET", f"/_chameleon/sandboxes/{SANDBOX}")
     check("sandbox exists before the restart", status == 200 and bool(sb_before.get("now")), f"{status} {sb_before}")
-    r = run(["docker", "restart", CONTAINER], timeout=120)
+    # By service name: the container name depends on the checkout folder (compose project name).
+    files = ["-f", "docker-compose.yml", "-f", "docker-compose.oidc.yml"] if OIDC else []
+    r = run(["docker", "compose", *files, "restart", "chameleon"], timeout=120)
     if r.returncode != 0:
         check("docker restart", False, r.stderr.strip())
         return
